@@ -18,8 +18,8 @@ export default {
     },
     mounted(){
     }, methods: {
-      handleGuess(letter,index){
-        this.$emit('guess',letter,index)
+      handleGuess(letter,index,prev){
+        this.$emit('guess',letter,index,prev)
       }
     }
 }

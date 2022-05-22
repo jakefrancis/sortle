@@ -9,7 +9,7 @@ export default {
   props: {
     letter: {
         type: String,
-        default: ' '
+        default: null
     },
     index: {
       type: Number,
@@ -24,7 +24,8 @@ export default {
     },
     methods: {
       handleInput(){
-        this.$emit('guess',this.char,this.index)
+        console.log('char',this.char,'letter',this.letter)
+        this.$emit('guess',this.char,this.index,this.letter)
       },
     }
     

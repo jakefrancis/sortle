@@ -59,8 +59,10 @@ div {
   color: #333;  
 }
 
-.green {
-    color: #538d4e;
+.correct {
+
+    background-color: #538d4e;
+    color:#eee;
 }
 
 .yellow{

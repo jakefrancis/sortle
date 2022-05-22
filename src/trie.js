@@ -6,6 +6,7 @@ class Trie {
 		this.green = 'green'
 		this.gold = 'gold'
 		this.red ='red'
+    this.occurrences = {}
   }
   insert(val) {
     this.add(this.root, val.split(""));
@@ -65,6 +66,7 @@ class Trie {
     }
     let node = this.find(this.root, start.length ? start.map(item => item.char) : '');
     if (!node) return [[{ char: 'Could not Find any Matches', color: this.red}]];
+    this.updateOccurrences(contains)
 		const words = await new Promise((resolve) => {
 			let words = this.fillInBlanks(node, wordArr, start, [], excluded, contains);
 			resolve(words)
@@ -76,22 +78,18 @@ class Trie {
     if (!copy.length) return found;
     let char = copy.shift();
     if (char) {
-      if (excluded[char] === "wrong") return found;
       let child = node.children[char];
       if (child) {
 				let val = { char: child.val, color: this.green}  
         let temp = word.concat(val);
         if (child.complete) {
-          let canInsert = this.canInsert(contains, temp);
-          if (canInsert) {
-            found.push(temp);
-          }
+          found.push(temp);
         } else {
           this.fillInBlanks(child, copy, temp, found, excluded,contains);
         }
       }
     } else {
-      for (const [letter, child] of Object.entries(node.children)) {
+      for (const [letter, child] of Object.entries(node.children).sort()) {
         if (excluded[letter] === "wrong") continue;
 				let val = excluded[letter] === 'contains' ? { char: child.val, color: this.gold} : { char: child.val, color: ''} 
         let temp = word.concat(val);
@@ -111,11 +109,35 @@ class Trie {
 		let letters = word.map( c => c.char)
     if (arr.length === 0) return true;
     for (let i = 0; i < arr.length; i++) {
-      if (!letters.includes(arr[i])) {
-        return false;
+      let total = this.occurrences[arr[i]]
+      if(total < 2){
+        if (!letters.includes(arr[i])) {
+          return false;
+        }
+      } else {
+        let count = 0;
+        let compare = arr[i]
+        letters.forEach(letter => {
+          if(letter === compare){
+            count++
+          }
+        })
+        if(count < total){
+          return false
+        }
       }
     }
     return true;
+  }
+  updateOccurrences(contains){
+    this.occurrences = {} 
+      contains.forEach(item => {
+        if(this.occurrences[item]){
+          this.occurrences[item]++
+        } else{
+          this.occurrences[item] = 1
+        }
+      })
   }
 }
 
