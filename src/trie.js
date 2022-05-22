@@ -83,7 +83,10 @@ class Trie {
 				let val = { char: child.val, color: this.green}  
         let temp = word.concat(val);
         if (child.complete) {
-          found.push(temp);
+          let canInsert = this.canInsert(contains, temp);
+          if (canInsert) {
+            found.push(temp);
+          }
         } else {
           this.fillInBlanks(child, copy, temp, found, excluded,contains);
         }
@@ -122,6 +125,7 @@ class Trie {
             count++
           }
         })
+        console.log(count, arr)
         if(count < total){
           return false
         }
