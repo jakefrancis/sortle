@@ -1,6 +1,12 @@
 <template>
   <div class='key-container'>
-    <KeyBox @keyPress="$emit('keyPress', letter.letter)" v-for='letter, index in keys' :key='index' :letter='letter.letter' :keyState='letter.keyState' />
+    <KeyBox 
+      v-for='letter, index in keys' 
+      :key='index' 
+      :letter='letter.letter' 
+      :keyState='letter.keyState'
+      @keyPress="$emit('keyPress', letter.letter, letter.keyState, location, index)" 
+    />
   </div>
 </template>
 
@@ -13,6 +19,9 @@ export default {
   props: {
     keys: {
       type: Array,
+    },
+    location: {
+      type: String
     }
   },
 }

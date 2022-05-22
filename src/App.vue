@@ -1,17 +1,20 @@
 <template>
    <div>
-      <WordBox v-for='index in guessMatrix.length' :guess='guessMatrix[index]' :key='index'/>
-      <KeyRow @keyPress='handleKeypress' :keys='topRow'/>
-      <KeyRow @keyPress='handleKeypress' :keys='middleRow'/>
-      <KeyRow @keyPress='handleKeypress' :keys='bottomRow'/>
-      <p>{{ message }}</p> <p> {{ word }}</p>
+      <WordBox @guess="handleGuess" :guess='guessMatrix'/>
+      <KeyRow @keyPress='handleKeypress' :keys='topRow'    location='top'/>
+      <KeyRow @keyPress='handleKeypress' :keys='middleRow' location='middle'/>
+      <KeyRow @keyPress='handleKeypress' :keys='bottomRow' location='bottom'/>
+      <div v-for="word in possible" :key='word'>
+        <span v-for="char in word" :class="char.color" :key="word+char+char.color"> {{ char.char }}</span>
+      </div>
+      <p v-if="loading">loading</p>
    </div> 
 </template>
 
 <script>
 import WordBox from './components/WordBox.vue'
 import KeyRow from './components/KeyRow.vue'
-import * as dictionary from './5letterWords.json'
+import TRIE from './trie'
 
 export default {
   name: 'App',
@@ -26,110 +29,89 @@ export default {
       guessIndex: 0,
       topRow: [...'qwertyuiop'],
       middleRow: [...'asdfghjkl'],
-      bottomRow: ['enter',...'zxcvbnm','delete'],
+      bottomRow: [...'zxcvbnm','Search'],
       guessMatrix: [],
-      message: ''
-    }
-  },
-  computed: {
-    word: () => {
-      let keys = Object.keys(dictionary['default'])
-      let word = keys[Math.floor(Math.random() * keys.length)]
-      return word
+      message: '',
+      exclusion : {},
+      wordleTrie : TRIE,
+      possible: ['hello'],
+      loading: false,
     }
   },
   methods: {
-    handleKeypress(letter){
-      let leng = this.guessMatrix.length
-      let guessRow = leng - (this.remainingGuesses) 
-
-      const insertLetter = () => {
-        if(this.guessIndex > 4) return 
-        this.guessMatrix[guessRow][this.guessIndex].letter = letter
-        this.guessIndex++  
-      }
-       const deleteLetter = () => {
-         if(this.guessIndex <= 0) return
-        --this.guessIndex
-         this.guessMatrix[guessRow][this.guessIndex].letter = ''
-        
-      }
-      const submitWord = () => {        
-        if(this.guessIndex !== 5) return
-        diffWord()        
-     
-      }
-
-      const diffWord = () => {
-        let guess = this.guessMatrix[guessRow];
-        let word = guess.map(item => item.letter).join('')
-        if(dictionary['default'][word] === undefined){
-          this.message = 'Word is not a valid word'
-          setTimeout(() => {
-            this.message = ''
-          }, 5000)
-          return
-        }
-        for(let i = 0; i < this.word.length; i++){
-          if(this.word[i] === guess[i].letter){
-            guess[i].state = 'match'
-          }
-          else if(this.word.includes(guess[i].letter)){
-            guess[i].state = 'contains'
-          }
-          else{
-            guess[i].state = 'wrong'
-            if(stateKeyboardChange(guess[i].letter,this.topRow, 'wrong')){
-              if(stateKeyboardChange(guess[i].letter,this.middleRow, 'wrong')){
-                stateKeyboardChange(guess[i].letter,this.bottomRow, 'wrong')
-              }
-            }
+    handleGuess(letter, index){
+      if(letter === '') letter = null
+      this.guessMatrix[index].letter = letter
+    },
+    async handleKeypress(letter,keyState,location,index){
+      if(letter === 'Search'){
+        let contains = []
+        let selectionCount = 0;
+        for(const [char, state] of Object.entries(this.exclusion)){
+          if(state === 'contains'){
+            contains.push(char)
+            selectionCount++
+          } 
+          if(state === 'wrong'){
+            selectionCount++
           }
         }
-           this.remainingGuesses -= 1
-        this.guessIndex = 0
-      }
-
-      const stateKeyboardChange = (guess, row, state) => {
-      for(let char of row){
-            if(char.letter === guess){              
-              char.keyState = state
-              return false
-            }
+        let nullCount = 0
+        const guess = this.guessMatrix.map( c => {
+          if(c === null){
+            nullCount++
+          }
+            return c.letter
+          })
+          if(nullCount === 5 || selectionCount === 0){
+            this.possible = [[{ char: 'Provide at least one Input'}]]
+          } else {
+            this.possible = await TRIE.findPotential(guess,this.exclusion,contains)
+          }
+      } else {
+        let state = this.updateKeyState(keyState)
+        this.exclusion[letter] = state
+        switch(location){
+          case 'top':
+            this.topRow[index].keyState = state
+            break;
+          case 'middle':
+            this.middleRow[index].keyState = state
+            break;
+          case 'bottom':
+            this.bottomRow[index].keyState = state
+            break;
+            
         }
-        return true
       }
-
-        switch(letter){
-        case 'delete':
-          deleteLetter()
-          break;
-        case 'enter':
-          submitWord()
-          break;
-        default:
-          insertLetter()
-          break;
-      } 
+    },
+    updateKeyState(state){
+            switch(state){
+              case 'unknown':
+                return 'wrong'
+              case 'wrong':
+                return 'contains'
+              case 'contains':
+                return 'unknown'
+             }
     }
   },
    mounted(){      
-      let matrix = [[],[],[],[],[],[]]
-      for(let i = 0; i < matrix.length; i++){
-        for(let j = 0; j < 5; j++){
+      let matrix = []
+      for(let i = 0; i < 5; i++){
           const baseLetter = {
-            letter: '',
-            state: ''
-          }
-          matrix[i][j] = baseLetter
+            letter: null,
         }
+        matrix[i] = baseLetter
       }
       this.guessMatrix = matrix
 
       const fillKeyRow = (row) => {
         let  objRow = []
-
         for(let letter of row){
+          if(letter !== 'search'){
+            this.exclusion[letter] = 'unknown'
+          }
           let obj = {
             letter,
             keyState: 'unknown'
@@ -153,5 +135,11 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   margin-top: 60px;
+}
+.green{
+  color: green
+}
+.gold{
+  color: gold
 }
 </style>

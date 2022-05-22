@@ -1,5 +1,5 @@
 <template>
-  <div @click="handleClick" :class='keyState'>
+  <div tabindex="0" @click="handleClick" @keyup.enter="handleClick" :class='keyState'>
     {{ letter }}
   </div>
 </template>
@@ -18,7 +18,7 @@ export default {
   },
   methods: {
     handleClick(){
-      this.$emit('keyPress',this.letter)
+      this.$emit('keyPress',this.letter,this.keyState)
     }
   }
 }
@@ -32,6 +32,7 @@ div {
   border-radius: 10px;
   height: 2rem;
   cursor: pointer;
+  user-select: none;
 }
 
 .unknown{
@@ -42,6 +43,11 @@ div {
 .wrong{
   background: #d1d1d1;
   color: #247BA0;  
+}
+
+.contains{
+  background: #ea9010;;
+  color: #333;  
 }
 
 

@@ -1,7 +1,7 @@
 <template>
-  <div :class="color">
-    {{ letter }}
-  </div>
+  <div>
+    <input v-model="char" @input="handleInput"/>
+  </div>   
 </template>
 
 <script>
@@ -11,37 +11,28 @@ export default {
         type: String,
         default: ' '
     },
-    letterState :  {
-        type: String,
-        default: ''
+    index: {
+      type: Number,
     }
-
   },
   data() {
     return {
-        
+        char: this.letter
     };
   },
   computed: {
-        color: function(){
-           
-            if(this.letterState === 'match'){
-                return 'green'
-            }
-            else if(this.letterState === 'contains'){
-                return 'yellow'
-            }
-            else{
-                return 'grey'
-            }
-            
-        }
+    },
+    methods: {
+      handleInput(){
+        this.$emit('guess',this.char,this.index)
+      },
     }
+    
 }
 </script>
 
 <style scoped>
-div {
+input {
   font-size: 2rem;
   background: lightblue;
   padding: 5px 10px;
