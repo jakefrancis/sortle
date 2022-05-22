@@ -125,7 +125,6 @@ class Trie {
             count++
           }
         })
-        console.log(count, arr)
         if(count < total){
           return false
         }

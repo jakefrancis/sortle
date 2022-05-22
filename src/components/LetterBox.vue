@@ -27,7 +27,6 @@ export default {
   },
     methods: {
       handleInput(){
-        console.log('char',this.char,'letter',this.letter)
         this.$emit('guess',this.char,this.index,this.letter)
       },
     }
