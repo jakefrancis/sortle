@@ -1,7 +1,7 @@
 <template>
-    <header> 
-      <h1>Wordle Suggestions</h1>
-    </header>
+  <header>
+    <h1>Wordle Suggestions</h1>
+  </header>
   <div class="container">
     <WordBox @guess="handleGuess" :guess="guessMatrix" />
     <div class="keyboard">
@@ -43,14 +43,14 @@ export default {
       guessIndex: 0,
       topRow: [..."qwertyuiop"],
       middleRow: [..."asdfghjkl"],
-      bottomRow: ["Find", ..."zxcvbnm"],
+      bottomRow: ["Find", ..."zxcvbnm", "Clear"],
       guessMatrix: [],
       currentMatrix: 0,
       message: "",
       exclusion: {},
       boardIndexes: {},
       wordleTrie: TRIE,
-      possible: ["hello"],
+      possible: [],
       loading: false,
     };
   },
@@ -58,19 +58,18 @@ export default {
     handleGuess(letter, index, prev) {
       if (letter === "") letter = null;
       this.guessMatrix[index].letter = letter ? letter.toLowerCase() : null;
-      if(letter){
-        let keyState = this.exclusion[letter]
-        if(keyState === 'unknown'){
+      if (letter) {
+        let keyState = this.exclusion[letter];
+        if (keyState === "unknown") {
           // contains is prev state change it to correct
-          this.updateKeyboard('contains',letter)
+          this.updateKeyboard("contains", letter);
         }
-      } else{
-        let keyState = this.exclusion[prev]
-        if(keyState === 'correct') {
-          this.updateKeyboard(keyState,prev)
+      } else {
+        let keyState = this.exclusion[prev];
+        if (keyState === "correct") {
+          this.updateKeyboard(keyState, prev);
         }
       }
-      
     },
     async handleKeypress(letter, keyState) {
       if (letter === "Find") {
@@ -90,11 +89,11 @@ export default {
           if (c.letter === null) {
             nullCount++;
           } else {
-            contains.push(c.letter)
+            contains.push(c.letter);
           }
           return c.letter;
         });
-          console.log(contains)
+        console.log(contains);
         if (nullCount === 5) {
           if (selectionCount > 0) {
             this.possible = await TRIE.findPotential(
@@ -112,14 +111,15 @@ export default {
             contains
           );
         }
+      } else if (letter === "Clear") {
+        this.init();
       } else {
         this.updateKeyboard(keyState, letter);
       }
     },
     updateKeyboard(keyState, letter) {
       let state = this.updateKeyState(keyState, letter);
-      let {location, index}  = this.boardIndexes[letter]
-      console.log(this.boardIndexes[letter])
+      let { location, index } = this.boardIndexes[letter];
       this.exclusion[letter] = state;
       switch (location) {
         case "top":
@@ -154,39 +154,42 @@ export default {
           return "unknown";
       }
     },
+    init() {
+      let matrix = [];
+      for (let i = 0; i < 5; i++) {
+        const baseLetter = {
+          letter: null,
+        };
+        matrix[i] = baseLetter;
+      }
+      this.guessMatrix = matrix;
+
+      const fillKeyRow = (row, location) => {
+        let objRow = [];
+        row.forEach((letter, index) => {
+          if (letter !== "Find") {
+            this.exclusion[letter] = "unknown";
+            this.boardIndexes[letter] = {
+              index,
+              location,
+            };
+          }
+          let obj = {
+            letter,
+            keyState: "unknown",
+          };
+          objRow.push(obj);
+        });
+        return objRow;
+      };
+
+      this.topRow = fillKeyRow([..."qwertyuiop"], "top");
+      this.middleRow = fillKeyRow([..."asdfghjkl"], "middle");
+      this.bottomRow = fillKeyRow(["Find", ..."zxcvbnm", "Clear"], "bottom");
+    },
   },
   mounted() {
-    let matrix = [];
-    for (let i = 0; i < 5; i++) {
-      const baseLetter = {
-        letter: null,
-      };
-      matrix[i] = baseLetter;
-    }
-    this.guessMatrix = matrix;
-
-    const fillKeyRow = (row, location) => {
-      let objRow = [];
-      row.forEach((letter,index) => {
-        if (letter !== "Find") {
-          this.exclusion[letter] = "unknown";
-          this.boardIndexes[letter] = {
-              index,
-              location
-          }
-        }
-        let obj = {
-          letter,
-          keyState: "unknown",
-        };
-        objRow.push(obj);
-      });
-      return objRow;
-    };
-
-    this.topRow = fillKeyRow(this.topRow, 'top');
-    this.middleRow = fillKeyRow(this.middleRow, 'middle');
-    this.bottomRow = fillKeyRow(this.bottomRow, 'bottom');
+    this.init();
   },
 };
 </script>
@@ -199,7 +202,7 @@ export default {
   color: #333;
   margin-top: 60px;
 }
-h1{
+h1 {
   text-align: center;
   font-size: 3.5rem;
 }

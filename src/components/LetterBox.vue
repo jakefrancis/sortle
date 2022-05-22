@@ -15,13 +15,16 @@ export default {
       type: Number,
     }
   },
-  data() {
+  data(){
     return {
-        char: this.letter
-    };
+      char: null
+    }
   },
-  computed: {
-    },
+  watch: {
+      letter(val){
+        this.char = val
+      }
+  },
     methods: {
       handleInput(){
         console.log('char',this.char,'letter',this.letter)
