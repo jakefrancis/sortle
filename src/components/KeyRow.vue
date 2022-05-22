@@ -30,12 +30,9 @@ export default {
 <style>
 .key-container{
   display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  margin: 0 auto;
-  width: 40%;
-  min-width: 200px;
-  padding: 0.5rem;
+  margin: 0 auto 8px;
+  width: 100%;
+  touch-action: manipulation;
 }
 
 

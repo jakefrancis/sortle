@@ -27,13 +27,15 @@ export default {
 
 <style scoped>
 .wordbox-container{
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 5px;
+  height: 100px;
   margin: 0 auto;
-  width: 40%;
-  min-width: 200px;
-  padding: 0.5rem;
+  margin-bottom: 20px;
+  justify-content: center;
+  justify-items: center;
+  
 }
 
 </style>

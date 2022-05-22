@@ -26,28 +26,52 @@ export default {
 
 <style scoped>
 div {
-  font-size: 2rem;
-  background: lightblue;
-  padding: 5px 10px;
-  border-radius: 10px;
-  height: 2rem;
-  cursor: pointer;
-  user-select: none;
+ font-family: inherit;
+    font-weight: bold;
+    font-size: 1.2rem;
+    border: 0;
+    padding: 0;
+    margin: 0 6px 0 0;
+    height: 58px;
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-transform: uppercase;
+    -webkit-tap-highlight-color: rgba(0,0,0,0.3);
 }
 
 .unknown{
-  background: #247BA0;
-  color: #d1d1d1;
+  background: #d3d6da;
+  color: #333;
 }
 
 .wrong{
-  background: #d1d1d1;
-  color: #247BA0;  
+  background: #787c7e;
+  color: #eee;  
 }
 
 .contains{
   background: #ea9010;;
   color: #333;  
+}
+
+.green {
+    color: #538d4e;
+}
+
+.yellow{
+    color: #c9b458;
+}
+
+.grey{
+    color: #787c7e;
+}
+.light-grey{
+   color: #d3d6da;
 }
 
 

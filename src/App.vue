@@ -1,13 +1,18 @@
 <template>
-   <div>
+   <div class="container">
       <WordBox @guess="handleGuess" :guess='guessMatrix'/>
+      <div class="keyboard">
       <KeyRow @keyPress='handleKeypress' :keys='topRow'    location='top'/>
       <KeyRow @keyPress='handleKeypress' :keys='middleRow' location='middle'/>
       <KeyRow @keyPress='handleKeypress' :keys='bottomRow' location='bottom'/>
-      <div v-for="word in possible" :key='word'>
-        <span v-for="char in word" :class="char.color" :key="word+char+char.color"> {{ char.char }}</span>
       </div>
-      <p v-if="loading">loading</p>
+      <div>
+        <ul >
+          <li v-for="word in possible" :key='word'><span v-for="char in word" :class="char.color" :key="word+char+char.color"> {{ char.char ? char.char.toUpperCase() : char.char }}</span></li>
+        </ul>
+      </div>
+    
+
    </div> 
 </template>
 
@@ -29,7 +34,7 @@ export default {
       guessIndex: 0,
       topRow: [...'qwertyuiop'],
       middleRow: [...'asdfghjkl'],
-      bottomRow: [...'zxcvbnm','Search'],
+      bottomRow: [...'zxcvbnm','Find'],
       guessMatrix: [],
       message: '',
       exclusion : {},
@@ -41,10 +46,10 @@ export default {
   methods: {
     handleGuess(letter, index){
       if(letter === '') letter = null
-      this.guessMatrix[index].letter = letter
+      this.guessMatrix[index].letter = letter ? letter.toLowerCase() : null
     },
     async handleKeypress(letter,keyState,location,index){
-      if(letter === 'Search'){
+      if(letter === 'Find'){
         let contains = []
         let selectionCount = 0;
         for(const [char, state] of Object.entries(this.exclusion)){
@@ -58,13 +63,18 @@ export default {
         }
         let nullCount = 0
         const guess = this.guessMatrix.map( c => {
-          if(c === null){
+          if(c.letter === null){
             nullCount++
           }
             return c.letter
           })
-          if(nullCount === 5 || selectionCount === 0){
-            this.possible = [[{ char: 'Provide at least one Input'}]]
+          if(nullCount === 5){
+            if(selectionCount > 0){
+              this.possible = await TRIE.findPotential(guess,this.exclusion,contains)
+            } else {
+              this.possible = [[{ char: 'Provide at least one Input'}]]
+              }
+            
           } else {
             this.possible = await TRIE.findPotential(guess,this.exclusion,contains)
           }
@@ -136,10 +146,41 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
-.green{
-  color: green
+.keyboard{
+  margin: 0 8px;
 }
+.green {
+    color: #538d4e;
+}
+
 .gold{
-  color: gold
+    color: #c9b458;
+}
+
+.grey{
+    color: #787c7e;
+}
+.light-grey{
+   color: #d3d6da;
+}
+.container {
+  margin: 0 auto;
+  max-width: 600px;
+}
+ul {
+  padding: 0;
+  margin: 0 auto;
+  justify-content: center;
+  margin-top: 3rem;
+  display: flex;
+  flex-wrap: wrap;
+  list-style-type: none;
+}
+li {
+  margin: 5px;
+  text-align: center;
+}
+span {
+  font-size: 2.5rem;
 }
 </style>
