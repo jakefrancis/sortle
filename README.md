@@ -6,7 +6,7 @@ Built from the nearly 16,000 valid answers for Wordle!
 
 The search engine gives no weight to certain words over the other so it's technically not cheating. 
 
-[Try it out!](http://localhost:8080/](https://sortle.netlify.app/))
+[Try it out!](https://sortle.netlify.app/)
 
 ## Instructions
 
