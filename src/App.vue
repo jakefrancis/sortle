@@ -1,6 +1,6 @@
 <template>
   <header>
-    <h1>Wordle Suggestions</h1>
+    <h1>SORTLE</h1>
   </header>
   <div class="container">
     <WordBox @guess="handleGuess" :guess="guessMatrix" />
