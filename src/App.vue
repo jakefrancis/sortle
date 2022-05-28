@@ -29,6 +29,7 @@
 import WordBox from "./components/WordBox.vue";
 import KeyRow from "./components/KeyRow.vue";
 import TRIE from "./trie";
+import FIVE_LETTER_WORDS from "./fiveLetterWords.js";
 
 export default {
   name: "App",
@@ -49,7 +50,6 @@ export default {
       message: "",
       exclusion: {},
       boardIndexes: {},
-      wordleTrie: TRIE,
       possible: [],
       loading: false,
     };
@@ -93,7 +93,6 @@ export default {
           }
           return c.letter;
         });
-        console.log(contains);
         if (nullCount === 5) {
           if (selectionCount > 0) {
             this.possible = await TRIE.findPotential(
@@ -190,6 +189,9 @@ export default {
   },
   mounted() {
     this.init();
+    for (let word of FIVE_LETTER_WORDS) {
+      TRIE.insert(word);
+    }
   },
 };
 </script>

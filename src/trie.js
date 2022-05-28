@@ -1,5 +1,3 @@
-import fiver from "./5words.js";
-
 class Trie {
   constructor() {
     (this.root = new Node("")), (this.excluded = {});
@@ -67,10 +65,7 @@ class Trie {
     let node = this.find(this.root, start.length ? start.map(item => item.char) : '');
     if (!node) return [[{ char: 'Could not Find any Matches', color: this.red}]];
     this.updateOccurrences(contains)
-		const words = await new Promise((resolve) => {
-			let words = this.fillInBlanks(node, wordArr, start, [], excluded, contains);
-			resolve(words)
-		})
+		const words = this.fillInBlanks(node, wordArr, start, [], excluded, contains);
 		return words.length ? words : [[{ char: 'Not Found', color: this.green}]]
   }
   fillInBlanks(node, wordArr, word, found, excluded, contains) {
@@ -153,9 +148,5 @@ class Node {
 }
 
 const TRIE = new Trie();
-
-for (let word of fiver) {
-  TRIE.insert(word);
-}
 
 export default TRIE;
