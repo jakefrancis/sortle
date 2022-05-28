@@ -1,6 +1,6 @@
 # SORTLE
 
-Sortle is a trie based search engine that retrieves possible answers for Wordle
+Sortle is a trie based search engine that retrieves possible answers for Wordle.
 
 Built from the nearly 16,000 valid answers for Wordle!
 
@@ -12,7 +12,7 @@ The search engine gives no weight to certain words over the other so it's techni
 
 Enter Known (Green) Letters in to the above boxes. 
 
-Tap the keyboard keys below and match the keyboard displayed on your game of Wordle
+Tap the keyboard keys below and match the keyboard displayed on your game of Wordle.
 
 Hit find to retrieve of potenial words. 
 
