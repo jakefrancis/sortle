@@ -1,6 +1,13 @@
 <template>
   <header>
-    <h1>SORTLE</h1>
+    <h1>
+      <span class="green">S</span>
+      <span class="gold">O</span>
+      <span>R</span>
+      <span class="gold">T</span>
+      <span>L</span>
+      <span class="green">E</span>
+    </h1>
   </header>
   <div class="container">
     <WordBox @guess="handleGuess" :guess="guessMatrix" />
@@ -244,5 +251,9 @@ li {
 }
 span {
   font-size: 2.5rem;
+}
+h1 > span {
+  text-align: center;
+  font-size: 4rem;
 }
 </style>
